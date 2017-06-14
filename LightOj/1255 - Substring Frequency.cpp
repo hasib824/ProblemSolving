@@ -13,15 +13,17 @@ int kmp()
     int i=0; int j=0;
     while(j<len_text)
     {
-       if(pattern[j]==text[i]) {i++;j++;};
+       if(pattern[i]==text[j]) {i++;j++;}
        else
        {
            if(i==0) j++;
            else i=A[--i];
        }
 
-       if(i==len_pattern) { cnt++; j=j-i};
+       if(i==len_pattern) { cnt++; j-=i;}
     }
+
+    return cnt;
 }
 
 void suffix_array()
@@ -54,8 +56,9 @@ int main()
         for(int t=1;t<=tc;t++)
         {
              scanf("%s",&text); len_text = strlen(text);
-             scanf("%s",&pattern); len_pattern = strlen(text);
+             scanf("%s",&pattern); len_pattern = strlen(pattern);
              suffix_array();
+             printf("%d",kmp());
 
         }
     }
