@@ -26,15 +26,13 @@ void insert(char *ch,int length)
         {
             temp->presence = 1;
             temp->children[index]= new Node;
+            temp->children[index]->flag=0; // Word is not completed yet
+            temp->children[index]->presence = 0; // No other word from along this path
         }
-        temp->flag=0;
         temp = temp->children[index];
-        if(temp->flag==1 )
+        if(temp->flag==1 ) // If the Same word Exists Before
         {
-            flag = 0;    // If the Same word Exists Before
-            //printf("Agdom bagdom\n");
-            break;
-
+            flag = 0; break;
         }
     }
     temp->flag = 1;
@@ -44,13 +42,14 @@ void insert(char *ch,int length)
 void delete_memory(Node * root)
 {
     for(int i=0; i<10; i++)
-        if(root->children[i]!=NULL) delete_memory(root->children[i]);
-    delete root;
+         if(root->children[i]!=NULL)
+            delete_memory(root->children[i]);
+    delete root; root = NULL ;
 }
 
 int main()
 {
-    read; write;
+    //read; write;
     int tc;
     scanf("%d",&tc);
     for(int t=1; t<=tc; t++)
@@ -68,7 +67,6 @@ int main()
         if(flag) printf("Case %d: YES\n",t);
         else printf("Case %d: NO\n",t);
         delete_memory(root);
-        root = NULL;
 
     }
 
