@@ -1,20 +1,20 @@
 #include<bits/stdc++.h>
-//#define read freopen ("in.txt","r",stdin);
-//#define write freopen ("out.txt","w",stdout);
+#define read freopen ("in.txt","r",stdin);
+#define write freopen ("out.txt","w",stdout);
 using namespace std;
 
 struct Node
 {
     Node *children[10];
-    bool flag; bool presence;
+    bool flag;
+    bool presence;
     Node()
     {
-        for(int i=0;i<10;i++) children[i] = NULL ;
+        for(int i=0; i<10; i++) children[i] = NULL ;
     }
 };
-
-Node *root;
-bool flag;
+Node *root=NULL;
+bool flag=1;
 
 void insert(char *ch,int length)
 {
@@ -25,22 +25,32 @@ void insert(char *ch,int length)
         if(temp->children[index]==NULL)
         {
             temp->presence = 1;
-            temp->children[index]= new Node();
+            temp->children[index]= new Node;
         }
-        temp->flag=0; temp = temp->children[index];
+        temp->flag=0;
+        temp = temp->children[index];
         if(temp->flag==1 )
         {
             flag = 0;    // If the Same word Exists Before
+            //printf("Agdom bagdom\n");
             break;
+
         }
     }
     temp->flag = 1;
     if(temp->presence==1) flag=0;
 }
 
+void delete_memory(Node * root)
+{
+    for(int i=0; i<10; i++)
+        if(root->children[i]!=NULL) delete_memory(root->children[i]);
+    delete root;
+}
+
 int main()
 {
-    //read; write;
+    read; write;
     int tc;
     scanf("%d",&tc);
     for(int t=1; t<=tc; t++)
@@ -48,16 +58,19 @@ int main()
         int n;
         scanf("%d",&n);
         flag = 1;
-        root = new Node();
+        root = new Node;
         char ch[n+1][11];
         for(int i=0; i<n; i++)
         {
             scanf("%s",ch[i]);
             insert(ch[i],strlen(ch[i]));
         }
-        if(flag) {printf("Case %d: YES\n",t);}
+        if(flag) printf("Case %d: YES\n",t);
         else printf("Case %d: NO\n",t);
-        free(root);
+        delete_memory(root);
+        root = NULL;
+
     }
+
     return 0;
 }
