@@ -24,7 +24,6 @@ int kmp(char text[],char pattern[],int A[])
             cnt++;  // pattern found
         }
     }
-
     return cnt;
 }
 
@@ -53,8 +52,8 @@ void printarray(int A[])
 */
 int main()
 {
-     read;
-     write;
+     //read;
+     //write;
     int tc;
     while(scanf("%d",&tc)==1)
     {
