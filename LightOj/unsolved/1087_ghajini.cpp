@@ -1,7 +1,10 @@
 #include<bits/stdc++.h>
+#define read freopen("in.txt","r",stdin);
+#define write freopen("out.txt","w",stdout);
 using namespace std;
-int maxi=-1; int mini;
 int data[110000];
+
+// Creating DQ using LINKEDLIST
 struct Node
 {
     Node* prev;
@@ -15,11 +18,14 @@ struct Node
     }
 };
 
-Node* head=NULL;
-Node* tail=NULL;
+//Node* head=NULL;
+//Node* tail=NULL;
 
 class DQ
 {
+  Node* head=NULL;
+  Node* tail=NULL;
+
 public:
     void push(int a)
     {
@@ -35,6 +41,14 @@ public:
         tail->next = temp;
         tail = tail->next;
         tail->a = a ;
+    }
+    Node* getHead()
+    {
+       return head;
+    }
+    Node* getEnd()
+    {
+        return tail;
     }
     bool dq_empty()
     {
@@ -57,7 +71,8 @@ public:
         if(tail==head)
         {
             delete head; delete tail ;
-            head = NULL; tail = NULL; return ;
+            //head = NULL; tail = NULL;
+             return ;
         }
         head = head->next ;
         delete head->prev;
@@ -77,102 +92,103 @@ public:
 
     }
 
-
     void dq_free(Node* dqHead)
     {
         if(dqHead->next== NULL)
         {
-            delete dqHead;
+            delete dqHead; tail =NULL; head = NULL;
             return;
         }
         dq_free(dqHead->next);
         delete dqHead;
         dqHead = NULL;
     }
+
+
 };
+
 // here starts Sliding Window algo
 
-int getMaxDiff(int nmbrOfData,int duration)
+int getMaxDiff(int nmbrOfData,int duration,int mint)
 {
-
+    int maxi=-1; int mini=mint;
+    int resMax= -1;
     DQ minQ; DQ maxQ;
     for(int i=0;i<duration;i++)
     {   //printf("Ki problem 1\n");
         while(!maxQ.dq_empty() && data[maxQ.dq_end()]<data[i])
              {
                maxQ.dq_pop_end();
-               printf("aJIB, ");
+               //printf("aJIB, ");
              }
-        minQ.push(i);
+
         while(!minQ.dq_empty() && data[minQ.dq_end()]>data[i])
            {
-             printf("min Q end : %d\n",minQ.dq_end());
+             //printf("min Q end : %d\n",minQ.dq_end());
              minQ.dq_pop_end();
            }
-        printf("MinQ :  : \n");
-
+        //printf("MinQ :  : \n");
+        minQ.push(i);
         maxQ.push(i);
 
     }
-     printf("Min is found : %d ", data[minQ.dq_front()]);
+     //printf("Min is found : %d ", data[minQ.dq_front()]);
     //printf("Ashe nai \n");
-    /*for(int i=duration;i<nmbrOfData;i++)
+    for(int i=duration;i<nmbrOfData;i++)
     {
         int temp = data[maxQ.dq_front()] ;
         int temp1= data[minQ.dq_front()];
         if(temp>maxi) maxi = temp;
         if(temp1<mini) mini= temp1;
-        printf("Big  : %d , small : %d\n",temp,temp1);
+        if(temp-temp1>resMax) resMax = temp-temp1;
+        //printf("Big  : %d , small : %d\n",temp,temp1);
         while(!maxQ.dq_empty() && maxQ.dq_front()<=i-duration)
             maxQ.dq_pop_front();
+        while(!minQ.dq_empty() && minQ.dq_front()<=i-duration)
+            minQ.dq_pop_front();
 
-        while(!maxQ.dq_empty() && data[minQ.dq_end()]>data[i])
+        while(!minQ.dq_empty() && data[minQ.dq_end()]>data[i])
             minQ.dq_pop_end();
 
         while(!maxQ.dq_empty() && data[maxQ.dq_end()]<data[i])
             maxQ.dq_pop_end();
-        maxQ.push(i);
-    } */
-    return 0;
+
+        maxQ.push(i); minQ.push(i);
+    }
+        int temp = data[maxQ.dq_front()] ;
+        int temp1= data[minQ.dq_front()];
+        if(temp>maxi) maxi = temp;
+        if(temp1<mini) mini= temp1;
+        //printf("Big  : %d , small : %d\n",temp,temp1);
+        if(temp-temp1>resMax) resMax = temp-temp1;
+
+        //printf("The result is : %d\n",resMax);
+        maxQ.dq_free(maxQ.getHead()); minQ.dq_free(minQ.getHead());
+       // maxQ.setNull(); minQ.setNull();
+
+        return resMax;
 }
 
 int main()
-{
+{   //read ; write;
     int tc;
     scanf("%d",&tc);
     for(int t=1; t<=tc; t++)
     {
-        DQ Q;
+     //   DQ Q;
 
         int nmbrOfData,duration;
         scanf("%d %d",&nmbrOfData,&duration);
-        cout<<"if empty : "<<Q.dq_empty()<<"\n";
-        scanf("%d",&data[0]); mini = data[0];
+        //cout<<"if empty : "<<Q.dq_empty()<<"\n";
+        scanf("%d",&data[0]); int mini = data[0];
         for(int i=1; i<nmbrOfData; i++)
         {
             scanf("%d",&data[i]);
-            if(mini>data[i]) mini = data[i];
-            Q.push(data[i]);
-
+            if(mini<data[i]) mini = data[i];
+           // Q.push(data[i]);
 
         }
-        cout<<"if empty : "<<Q.dq_empty()<<"\n";
-        printf("front : %d back %d\n",Q.dq_front(),Q.dq_end());
-        Q.dq_pop_front();
-        Q.dq_pop_end();
-        printf("front : %d back %d\n",Q.dq_front(),Q.dq_end());
-        //Q.dq_pop_front();
-        Q.dq_pop_end();
-        printf("front : %d back %d\n",Q.dq_front(),Q.dq_end());
-        Q.dq_pop_end();
-        printf("front : %d back %d\n",Q.dq_front(),Q.dq_end());
-
-        Q.dq_free(head);
-        head = NULL;
-        tail = NULL;
-        cout<<"Freeing DQ \n"<<"if empty : "<<Q.dq_empty()<<"\n";
-
-        getMaxDiff(nmbrOfData,duration);
+        printf("Case %d: %d\n",t,getMaxDiff(nmbrOfData,duration, mini));
     }
     return 0;
 }
@@ -191,5 +207,15 @@ int main()
 7
 12
 4
+
+
+
+3
+6 2
+6 0 8 8 8 4
+8 3
+19 8 4 13 12 1 0 13
+2 2
+1 1
 
 */
