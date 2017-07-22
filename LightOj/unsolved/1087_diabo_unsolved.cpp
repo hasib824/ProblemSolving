@@ -1,16 +1,20 @@
 #include<bits/stdc++.h>
+#include <exception>
+#include <stdio.h>
 #define read freopen("in.txt","r",stdin);
 #define write freopen("out.txt","w",stdout);
 using namespace std;
 
-int const maxi = 3*100000;
+#define MAXX 160000
 
-int data[3*maxi];
-int tree[3*maxi];
-
+int  data[MAXX*3];
+int  tree[MAXX*3] ;
+int queryLow=0;
+int queryHigh=0;
+int idx=0; int ghore = 0;
 void initializeTree()
 {
-    for(int i=0;i<maxi;i++)
+    for(int i=0;i<MAXX;i++)
     {
         data[i]=-1;
         tree[i]=0;
@@ -18,8 +22,10 @@ void initializeTree()
 
 }
 
-void update(int low,int high,int pos,int idx)
+
+void update(int low,int high,int pos)
 {
+   if(low<0 || high<0 || pos<0) printf("Something wrong\n");
    if(low>idx || high<idx) return;
    if(low==idx && idx==high)
    {
@@ -27,69 +33,83 @@ void update(int low,int high,int pos,int idx)
        return;
    }
    int mid = (high-low)/2+low;
-   update(low,mid,pos*2,idx);
-   update(mid+1,high,pos*2+1,idx);
+   update(low,mid,pos*2);
+   update(mid+1,high,pos*2+1);
    tree[pos]= tree[pos*2]+tree[pos*2+1];
 }
 
-int query(int low,int high,int pos,int queryLow,int queryHigh)
-{
+int query(int low,int high,int pos)
+{   //printf("Ghore re mona ghore %d\n",ghore++);
     if(low>queryHigh) return 0;
-    if(queryLow<=low && high<=queryHigh) return tree[pos];
+    if(queryLow<=low && high<=queryHigh) {return tree[pos];}
     int mid=(high-low)/2+low;
-    int r1 = query(low,mid,pos*2,queryLow,queryHigh);
-    int r2 = query(mid+1,high,pos*2+1,queryLow,queryHigh);
+    int r1 = query(low,mid,pos*2);
+    int r2 = query(mid+1,high,pos*2+1);
     return r1+r2;
+}
+
+int quer(int low,int high,int pos,int idxToRemove)
+{
+    int res1=query(low,high,pos); int res2=-1;
+    while(res1!=res2)
+    {
+        queryHigh = idxToRemove+res1;
+        res2 = query(low,high,pos);
+        if(res1<res2) { res1=res2; res2=-1 ;}
+        else if(res1==res2)
+        {
+            res1=res2; break;
+        }
+    }
+
+    return res1;
+
 }
 int main()
 {
-    //read; write;
+    read ; write;
     int tc;
     scanf("%d",&tc);
     for(int t=1;t<=tc;t++)
     {
-       int numbrOfData,nmbrOfQuery;
-       scanf("%d",&numbrOfData);
-       scanf("%d",&nmbrOfQuery);
+       int numbrOfData; int nmbrOfQuery;
+       scanf("%d %d",&numbrOfData,&nmbrOfQuery);
+        printf("Case %d:\n",t);
        int idxOfLastData = numbrOfData;
-       numbrOfData+=nmbrOfQuery; // beacuse "nmbrOfQuery-1" numbers can be add
+       numbrOfData+=nmbrOfQuery;
        initializeTree();
-       for(int i=1;i<=idxOfLastData;i++) scanf("%d",&data[i]);
-       printf("Case %d:\n",t);
+       for(int i=1;i<=idxOfLastData;i++) scanf("%d",(data+i));
        for(int i=0;i<nmbrOfQuery;i++)
        {
-          char operation;
-          scanf(" %c",&operation);
-          if(operation=='c')
+          char operation[5];
+          scanf("%s",operation);
+
+          if(operation[0]=='c')
           {
                 int idxToRemove;
                 scanf("%d",&idxToRemove);
-                int res1=query(1,numbrOfData,1,1,idxToRemove); int res2=-1;
-                while(res1!=res2)   // Getting the exact index , beacuase the pointing index might have been removed
-                {
-                    res2 = query(1,numbrOfData,1,1,idxToRemove+res1);
-                    if(res1<res2) { res1=res2; res2=-1 ;}
-                    else if(res1==res2) res1=res2;
-                }
+                queryLow = 1 ; queryHigh = idxToRemove;
+                int res1=quer(1,numbrOfData,1,idxToRemove);
                 int res = data[res1+idxToRemove];
                 if(res!=-1)
                 {  printf("%d\n",res);
-                   // if the number is removed then this index number can be found "res1+idxToRemove" th index
-                   update(1,numbrOfData,1,res1+idxToRemove);
+                   idx = res1+idxToRemove ;
+                   update(1,numbrOfData,1);
                 }
-                else printf("none\n"); // not updating the index beacause there is no number
-
+                else printf("none\n");
           }
 
-          else if(operation=='a')
+          else if(operation[0]=='a')
           {
                 int dataToAdd; scanf("%d",&dataToAdd);
-                data[++idxOfLastData]=dataToAdd;
+                ++idxOfLastData;
+                //printf("idx of last : %d\n",idxOfLastData);
+                data[idxOfLastData]=dataToAdd;
           }
 
-
-
        }
+       queryLow = 0; queryHigh = 0; idx = 0;
+
     }
 
     return 0;
@@ -106,5 +126,17 @@ c 4
 c 4
 2 1
 18811 1991
+c 1
+
+
+
+1
+
+0 5
+
+c 1
+a 40
+c 2
+c 1
 c 1
 */
